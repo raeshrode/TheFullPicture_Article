@@ -83,7 +83,7 @@ my_plot <- function (values)
 (p1 <- my_plot(result))
 
 p1.5 <- p1 + 
-              ggtitle("Yadav et. al. 2021") +
+              ggtitle("Yadav et. al. 2022") +
               theme(plot.title = element_text(size=28,face='bold', hjust = 0.5),
                     axis.text = element_text(size=20, face="bold"),
                    axis.title = element_text(size=25,face='bold'),
