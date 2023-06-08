@@ -1,17 +1,17 @@
 # Yadav Topic Modeling Analysis
 
-library(tidyverse)
-library(phyloseq)
-library(lmerTest)
-library(modeest)
-library(MicrobiomeStat) 
-library(topicmodels)
-library(tidytext)
-library(ldatuning)
-library(cowplot)
-library(ape)
+library(tidyverse); packageVersion("tidyverse")   #version: 2.0.0
+library(phyloseq); packageVersion("phyloseq")    #version: 1.42.0
+library(lmerTest); packageVersion("lmerTest")    #version: 3.1.3
+library(modeest); packageVersion("modeest")      #version: 2.4.0
+library(MicrobiomeStat); packageVersion("MicrobiomeStat")  #version: 1.1
+library(topicmodels); packageVersion("topicmodels")      #version: 0.2.14
+library(tidytext); packageVersion("tidytext")          #version: 0.4.1
+library(ldatuning); packageVersion("ldatuning")      #version: 1.0.2
+library(cowplot); packageVersion("cowplot")          #version: 1.1.1
+library(ape); packageVersion("ape")                  #version: 5.7.1
 
-otu_mat<- read.csv('yadav_asv', row.names = 1)
+otu_mat<- read.csv('yadav_asv.csv', row.names = 1)
 tax_mat<- read.csv('yadav_taxa_table.csv', row.names = 1)
 samples_df <-read.csv('yadav_metadata.csv', row.names = 1)
 
@@ -39,7 +39,6 @@ ps2_genus
 #### fit lda model ####
 ms_vs_control <- ps2_genus
 count_matrix <- data.frame(t(data.frame(otu_table(ms_vs_control))))
-count_matrix <- round(count_matrix,0) # must have whole numbers for the following 
 
 result <- FindTopicsNumber(
   count_matrix,
@@ -92,7 +91,6 @@ p1.5 <- p1 +
                    legend.title=element_text(size=25,face='bold'))
 p1.5
 
-
 # 30 topics
 lda_k30 <- LDA(count_matrix, k = 30, method = "VEM", control = list(seed = 243))
 
@@ -106,7 +104,6 @@ g_df <- data.frame(tidy(lda_k30, matrix = "gamma")) %>%
 # notice fractional membership 
 head(b_df)
 head(g_df)
-lda_k30
 
 # build topic model ps object
 lib_size_df <- data.frame(sample_sums(ms_vs_control)) %>%
@@ -130,8 +127,6 @@ write.csv(tm_df,"Yadav_document_topic_mat.csv")
   otu_table(tm_df, taxa_are_rows = TRUE))) 
 
 #### fittind DA model to the topics
-colnames(sample_data(ps_topic_g))
-
 tm_linda <- linda(phyloseq.obj = ps_topic_g,
                   formula = '~ Group', 
                   feature.dat.type = "count",
@@ -153,6 +148,7 @@ fdr_linda <- linda_rrms %>%
   mutate(Topic = factor(Topic, levels = Topic))
 head(fdr_linda)
 sum(fdr_linda$Reject=="Yes")
+
 write.csv(fdr_linda, "fdr_linda_rrmsVShc.csv")
 
 (p2 <- ggplot(data = fdr_linda, aes(x = Topic, y = log2FoldChange, fill = Reject)) +
@@ -160,7 +156,6 @@ write.csv(fdr_linda, "fdr_linda_rrmsVShc.csv")
     ggtitle("MS vs HC (Yadav)", subtitle =  paste0("p ≤ ",p," & q ≤ ", q)) +
     labs(y = "\nLog2 Fold-Change", x = "") +
     theme_bw() +
-    #guides(fill=guide_legend(title="Significantly \nDifferent")) +
     theme(axis.text.x = element_text(color = "black", size = 30),
           axis.text.y = element_text(color = "black", size = 20, face="bold"),
           axis.title.y = element_text(size = 20),
@@ -177,7 +172,6 @@ write.csv(fdr_linda, "fdr_linda_rrmsVShc.csv")
 sig_topics <- fdr_linda[fdr_linda$Reject=="Yes",]$t_n
 sig_topics
 
-# print sig topics and ggsave
 tax <- as.data.frame(tax_mat)
 tax$term <- row.names(tax)
 
@@ -294,6 +288,7 @@ for (t in 1:length(sig_topics)) {
          width = 14, height = 12)
 }
 
+## extract topic term_matrix 
 topic_term_matrix <- b_df %>%  pivot_wider(names_from = topic,
                                            values_from = beta)
 colnames(topic_term_matrix) <- paste0("yadav_",colnames(topic_term_matrix))
