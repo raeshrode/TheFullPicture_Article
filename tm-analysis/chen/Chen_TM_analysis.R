@@ -298,3 +298,30 @@ topic_term_matrix <- b_df %>%  pivot_wider(names_from = topic,
 colnames(topic_term_matrix) <- paste0("chen_",colnames(topic_term_matrix))
 write.csv(topic_term_matrix,"chen_topic_term_matrix.csv", row.names = F)
 
+# correlations for network #
+ms_genus <- subset_samples(ps2_genus,Disease_state2=="MS")
+cor_genus <- as.data.frame(otu_table(ms_genus))
+cor_genus$term <- row.names(cor_genus)
+cor_genus_2 <- merge(tax,cor_genus,by="term")
+cor_genus_2 <- cor_genus_2[,c(7,9:length(cor_genus_2))]
+rownames(cor_genus_2) <- cor_genus_2$Genus
+cor_genus_2 <- cor_genus_2[,-1]
+cor_genus_mat <- (as.matrix(cor_genus_2))
+
+cor_df <- data.frame()
+for (i in 1:nrow(cor_genus_mat)) {
+  for (j in 1:nrow(cor_genus_mat)) {
+    cor.tmp <- cor.test(cor_genus_mat[i,], cor_genus_mat[j,])
+    cor_sum <- data.frame("R"=cor.tmp$estimate,"P"=cor.tmp$p.value,
+                          "microbe1"=row.names(cor_genus_2[i,]),
+                          "microbe2"=row.names(cor_genus_2[j,]))
+    cor_df <- rbind(cor_df,cor_sum)
+  }
+  
+}
+head(cor_df)
+
+cor_df_clean <- cor_df %>% 
+  filter(!duplicated(paste0(pmax(microbe1, microbe2), pmin(microbe1, microbe2))))
+
+write.csv(cor_df_clean,"chen_correlation.csv")
