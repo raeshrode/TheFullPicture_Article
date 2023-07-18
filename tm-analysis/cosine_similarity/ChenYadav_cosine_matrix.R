@@ -61,8 +61,6 @@ p1 <- ggplot(cos_mat2, aes(Yadav, Chen)) +
                        mid="white", 
                        high = "red",
                        midpoint = 0.79, na.value = 'red',
-                       #breaks=c(0.00,0.80),
-                       #labels=c(0.00,0.80),
                        limits=c(0.00,.8)) +
   theme(axis.title = element_text(face="bold",size=25),
         axis.text = element_text(size=22, face='bold'),
