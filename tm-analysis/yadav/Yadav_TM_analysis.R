@@ -258,7 +258,6 @@ meta_data$term <- meta_data$Row.names
 
 setwd('figures/')
 
-# DA with Wilcox on features in topics #
 for (t in 1:length(sig_topics)) {
   k=sig_topics[t]
   ##
