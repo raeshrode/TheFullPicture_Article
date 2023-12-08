@@ -291,6 +291,8 @@ for (t in 1:length(sig_topics)) {
   } else {
     opacity_pal <-  rep(c(0.7, 0.07),length(unique(topic_features2$Genus)))
   }
+
+  topic_features2$Group2 <- ifelse(topic_features2$Group=="HC", "Control", "MS")
   
   (
     p5 <-   topic_features2 %>% 
