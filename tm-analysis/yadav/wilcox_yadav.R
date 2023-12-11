@@ -11,7 +11,7 @@ library(ldatuning); packageVersion("ldatuning")      #version: 1.0.2
 library(cowplot); packageVersion("cowplot")          #version: 1.1.1
 library(ape); packageVersion("ape")                  #version: 5.7.1
 
-#### chen wilcox ####
+#### yadav wilcox ####
 otu_mat<- read.csv('yadav_asv.csv', row.names = 1)
 tax_mat<- read.csv('yadav_taxa_table.csv', row.names = 1)
 samples_df <-read.csv('yadav_metadata.csv', row.names = 1)
